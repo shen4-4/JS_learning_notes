@@ -1,4 +1,4 @@
-//对象直接量
+	//对象直接量
 	var empty = {};
 	var point = {x:0;y:0};
 	var point2 = { x:point.x, y:point.y+1};
