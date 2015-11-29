@@ -77,9 +77,149 @@
 
 	//构造函数调用，暂时忽略，第9章具体再看
 
-	//间接调用
+	//间接调用,call()和apply()方法可用来间接调用函数，允许显示调用所需的this值，后面具体讨论
+
+	//函数的形参和实参
+	//可选形参 当调用的函数的时候传入的实参比函数生命时指定的形参要少，剩下的形参都将设置为undefined值
+	//将对象o中可枚举的属性名追加至数组a中，并返回数组a
+	function getPropertyNames(o,a){
+		if(a==undefined)a=[];
+		for(var property in o) a.push(property);
+		return a;
+	}
+
+	//实参对象 当调用函数的时候传入的实参个数超过函数定义时的形参个数时，没有办法获得未命名值的引用
+	//实参对象是一个类数组对象，这样可以通过数字下标线就能访问传入函数的实参值,标识符arguments指向实参对象的引用
+	//在ES5中移除了实参对象这个特殊对象
+	//检查实参个数
+	function f(x,y,z){
+		if(arguments.length != 3){
+			throw new Error("function f called with"+arguments.length+'arguments,but it expects 3 arguments');
+		}
+	}
+	
+	//实参对象的好处，就是让函数可以操作任意数量的实参,下面的example就是接收任意数量的实参，并返回传入实参的最大值
+	function max(/*...*/){
+		var max = Number.NEGATIVE_INFINITY;
+		for(var i =0; i< arguments.length;i++){
+			if(arguments[i]>max) max= arguments[i];
+		return max;
+		}
+	}
+	var largest = max(1,10,....,);
+
+	//callee和caller属性
+	//callee属性指代当前正在执行的函数，caller非标准它也指代调用当前正在执行的函数
+	//匿名函数中通过callee来递归调用自身
+	var factorial = function(x){
+		if(x<-1) return 1;
+		return x * arguments.callee(x-1);
+	};
+
+	//实参类型
+	//实参类型检查逻辑 isArrayLike()
+	function sum(a){
+		if(isArrayLike(a)){
+			var total = 0;
+			for(var i = 0;i<a.length;i++){
+				var element = a[i];
+				if(element == null) continue;
+				if(isFinite(element)) total += element;
+				else throw new Error('sum():element must be finite numbers');
+			}
+			return total;
+		}
+		else throw new Error('sum():arguments must be array-like');
+	}
+
+
+	//作为值的函数
+	function  square(x){x*x;}
+	//函数赋值给其他的变量
+	var s= square;
+	square(4);
+	s(4);
+	//函数赋值给对象的属性，当函数作为函数的属性调用时，函数就称为方法
+	var o = {square:function(x){ return x*x}};
+	var y = o.square(16);
+	//不带名字直接赋值给数组元素
+	var a = [function(x){return x*x;},20];
+	a[0](a[1]); //400 好吧，这种写法头一次见
+
+	//自定义函数属性   
+	// 将自身当做数组对待。来缓存上一次的计算结果
+	function factorial(n){
+		if(isFinite(n) && n >0 && n = Math.round(n)){ //有限的正整数
+			if(!(n in factorial))
+				factorial[n] = n * factorial(n-1); //没有缓存结果就计算结果缓存之
+			return factorial[n];
+		}
+		else return NaN;
+	}
+	factorial[i] = 1; //初始化缓存以保存这种基本情况
+
+	//作为命名空间的函数
+	//在js中无法声明只有一个代码块内可见的变量 我们常常简单定义了一个函数作为临时的命名空间
+	//在这个命名空间定义的变量都不会污染到全局命名空间
+	function mymodule(){
+		//模块内所有的变量都是局部变量
+	}
+	mymodule();
+
+	//更简单的方法，直接定义一个匿名函数，并在单个表达式中调用
+	(function(){
+		//代码
+	}()); //结束函数定义并立即调用它
+
+	//特定场景下返回带补丁的extend()版本
+	var extend = (function(){
+		for(var p in {toString:null}){
+			return function extend(o){
+				for(var i =1;i<arguments.length;i++){
+					var souce = arguments[i];
+					for(var prop in source) o[prop] = source[prop];
+				}
+				return o;
+			};
+		}
+		return function patched_extend(o){
+			for(var i =1;i<arguments.lenth;i++){
+				var source = arguments[i];
+				for(var prop in source) o[prop] = source[prop];
+
+				for(var j=0;j<protoprops.length;j++){
+					prop = protoprops[j];
+					if(source.hasOwnProperty(prop)) o[prop] = source[prop];
+				}
+			}
+			return o;
+		};
+		var protoprops =["soString",'valueOf','constructor','hasOwnProperty','isPrototypeOf','propertyIsEnumberable','toLocaleString'];
+	}());
+
+
+	//闭包
+	//函数对象可以通过作用域链相互关联起来，函数体内部的变量都可以保存在函数作用域内，这种特性称为‘闭包’
+	//理解闭包先了解嵌套函数的作用域规则
+	var scope = "global scope";
+	function checkscope(){
+		var scope = 'local scope';
+		function f(){return scope;}
+		return f();
+	}
+	checkscope(); //local scope
 
 	
+
+
+
+
+
+
+
+
+
+
 
 
 
