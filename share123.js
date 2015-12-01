@@ -56,8 +56,13 @@
 	Math.abs(-5) //5 求绝对值
 	Math.random() //生成一个等于0，小于1.0的伪随机数 发散一下，获取0~10之间的随机数
 		·Math.round(Math.random() * 10);
-		·(int)(Math.random() * 10);
 		·Math.floor((Math.random() * 10 + 1)); 
+	//再发散一下，随机取多少到多少之间的数
+	function randomIntFromInterval(min,max)
+	{
+	    return Math.floor(Math.random()*(max-min+1)+min);
+	}
+
 	Math.sqrt(3) //3的立方根
 
     //js的非数字值Infinity NaN 和任何值都不相等，包括自身没有办法通过"x===NaN"来判断变量是否是NaN
