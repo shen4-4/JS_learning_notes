@@ -64,6 +64,7 @@
     //js的非数字值Infinity NaN 和任何值都不相等，包括自身没有办法通过"x===NaN"来判断变量是否是NaN
     //isNaN() 参数是NaN或者一个非数字值(字符串，对象什么的) 返回true
     //isFinite() 参数不是NaN，Infinity或-Infinity的时候返回true
+
     //日期和时间 Date()函数，用来表示日期和时间的对象
     var now = new Date();
     var then = new Date(2015, 0, 1, 13, 10, 30); //15年1月1日1:10:30
@@ -73,6 +74,7 @@
     then.getDate() //1 从1开始计数的天数
     then.getDay() //5 星期几，0代表星期日，5代表星期一
     then.getHours() //13
+
     //数字时钟格式的时间
     function JSClock() {
         var time = new Date();
@@ -88,6 +90,7 @@
         temp += ((hour >= 12) ? 'P.M.' : 'A.M.');
         return temp;
     }
+
     //字符串直接量 由单引号或者双引号括起来的字符序列
     "" //空字符串 包含0个字符
     'spring'
@@ -142,9 +145,12 @@
     var bla;
     //...
     //理解为
-    var bla; bla = 2;
+    var bla; 
+    bla = 2;
+
     //像是隐式全局作用域的变量也有可能是其外部函数变量的引用。
-    var x = 0; console.log(typeof z); //undefined ,z不存在
+    var x = 0; 
+    console.log(typeof z); //undefined ,z不存在
     function a() {
         var y = 2;
         console.log(x, y); //0,2
