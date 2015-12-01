@@ -2,10 +2,7 @@
 	JavaScript的核心语言是ECMAScript， 现在最新版本是ES6
 	//ECMAScript定义了哪些内容
 	1. 语法(解析规则， 关键字， 流程控制， 对象初始化)
-	2. 错误处理机制(
-	    throw,
-	    try /
-	    catch)
+	2. 错误处理机制( throw,try /catch)
 	3. 类型(布尔值， 数字， 字符串， 函数， 对象等)
 	4. 全局对象(浏览器环境中， window就是全局对象)
 	5. 基于原型的继承机制
@@ -60,7 +57,9 @@
 	Math.random() //生成一个等于0，小于1.0的伪随机数 发散一下，获取0~10之间的随机数
 		·Math.round(Math.random() * 10);
 		·(int)(Math.random() * 10);
-		·Math.floor((Math.random() * 10 + 1); Math.sqrt(3) //3的立方根
+		·Math.floor((Math.random() * 10 + 1)); 
+	Math.sqrt(3) //3的立方根
+
     //js的非数字值Infinity NaN 和任何值都不相等，包括自身没有办法通过"x===NaN"来判断变量是否是NaN
     //isNaN() 参数是NaN或者一个非数字值(字符串，对象什么的) 返回true
     //isFinite() 参数不是NaN，Infinity或-Infinity的时候返回true
@@ -74,6 +73,9 @@
     then.getDate() //1 从1开始计数的天数
     then.getDay() //5 星期几，0代表星期日，5代表星期一
     then.getHours() //13
+
+    var time = new Date();
+    console.log(time);//Tue Dec 01 2015 14:14:22 GMT+0800 (中国标准时间)
 
     //数字时钟格式的时间
     function JSClock() {
@@ -102,6 +104,7 @@
     "one\
 	two\
 	three"
+
     //字符串的使用
     var s = "shenqiannan"
     s.charAt(0) //"s"
@@ -120,7 +123,13 @@
         a = a + 1;
     }
     //任意js的值都会被转换为布尔值，下面这些值会被转换为false
-    undefined null 0 - 0 NaN "" //空字符串
+    undefined
+    null 
+    0 
+    -0 
+    NaN 
+    "" //空字符串
+
     if ((x == 0) && (y == 0) || !(z == 0)) {
         //x和y都是0,z是非0
     }
@@ -162,7 +171,6 @@
         b();
         console.log(x, y, z); //3 4 5
     	}
-	}
 	a();
 	console.log(x, z); //3 5
 	console.log(typeof y); //undefined ,因为y是函数a的本地变量
