@@ -209,18 +209,180 @@
 	}
 	checkscope(); //local scope
 
-	
+	//在同一个外部函数内定义的多个嵌套函数可以共享一个作用域链
+	function counter(){
+		var n =0;
+		return{
+			count:function(){return n++; },
+			reset:function(){return n=0;}
+		};
+	}
+	var c = counter(),d=counter();//创建两个计数器
+	c.count() //0
+	d.count() //0
+	c.reset()
+	c.count() //0 重置了c
+	d.count() //1 d不受影响
 
+	//利用闭包实现私有属性存取器方法
+	function addPrivateProperty(o,name,predicate){
+		var value;
+		o['get'+name]= function(){return value;};
+		o['set'+name]= function(v){
+			if(predicate && !predicate(v))
+				throw Error('set'+name+":invalid value"+v);
+			else
+				value=v;
+		};
+	}
+	var o ={};
+	addPrivateProperty(o,"Name",function(x){return typeof x == "string";});
+	o.setName("Frank");
+	console.log(o.getName());
+	o.setName(0);
 
+	//在同一个作用域链中定义两个闭包，这两个闭包共享同样的私有变量或变量
+	//注意那些不希望共享的变量往往不经意间共享给了其他的闭包
+	function constfuncs(v){
+		return function(){
+			return v;
+		};
+	}
+	var funcs = [];
+	for(var i =0;i<10;i++) 
+		funcs[i]= constfuncs(i);
+	funcs[5]() //5
 
+	function constfuncs(){
+		var funcs=[];
+		for(var i =0;i<10;i++)
+			funcs[i] = function(){return i;};
+		return funcs;
+	}
+	var funcs = constfuncs();
+	funcs[5]() //10
 
+	//函数属性，方法和构造函数
+	//length属性
+	//arguments.length表示传入函数的实参个数
+	function check(args){
+		var actual = args.length;
+		var expected = args.callee.length;
+		if(actual !== expected)
+			throw Error("Expected"+expected+'args;got'+actual);
+	}
+	function(x,y,z){
+		check(arguments);
+		return x+y+z;
+	}
 
+	//call()和apply(),可以看做是某个对象的方法，通过调用方法的形式来间接调用
+	//call()和apply()的第一个实参是要调用函数的母对象，它是调用上下文，在函数体内通过this来获得对他的引用
+	//以对象o的方法来调用函数f(),可以这样使用 call()和apply()
+	f.call(o);
+	f.apply(o);
+    
+    o.m = f; //o不预先存在名为m的属性
+    o.m();
+    delete o.m();
+	//以对象o的方法来调用函数f(),并传入两个参数
+	f.call(o,1,2);
+	f.apply(o,[1,2]);
 
+	//bind方法，主要作用就是将函数绑定至某个对象
+	function f(y){
+		return this.x+y;
+	}
+	var o = {x:1};
+	var g = f.bind(o);
+	g(2) //3
 
+	function bind(f,o){
+		if(f.bind)
+			return f.bind(o);
+		else return function(){
+			return f.apply(o,arguments);
+		}
+	}
 
+	//bind()方法不仅仅是将函数绑定到对象，它还带有其他应用，除了第一个绑定的实参外，传入的bind()的实参也会绑定至this
+	var sum = function(x,y){
+		return x+y;
+	}
+	var succ = sum.bind(null,1);
+	succ(2) //3
 
+	function f(y,z){return this.x+y+z};
+	var g = bind({x:1},2);
+	g(3); //6
 
+	//Function()构造函数，以下代码定义的函数等价
+	var f = new Function('x','y','return x*y;');
+	var f = function(x,y){
+		return x*y;    
+	} 
 
+	//检测一个对象是否是真正的函数对象
+	function isFunction(){
+		return Object.prototype.toString.call(x) === "[object Function]";
+	}
 
+	//函数式编程
+	//使用函数处理数组
+	var data = [1,1,3,5,5];
+	var total = 0;
+	for(var i= 0;i<data.length;i++)
+		total += data[i]; 
+	var mean = total/data.length;//3
 
+	//使用map()方法和reduce()方法实现同样的计算，更轻松
+	var sum = function(x,y){
+		return x+y;
+	};
+	var data = [1,1,3,5,5]
+	var mean = data.reduce(sum)/data.length;
 
+	//如果不存在map方法和reduce()函数，可以自定义
+	var map = Array.prototype.map
+		?function(a,f){
+			return a.map(f);
+		}
+		:function(a,f){
+			var results = [];
+			for(var i = 0;len=a.length;i<len;i++){
+				if(i in a)
+					results[i] = f.call(null,a[i],i,a)
+			}
+			return results;
+		};
+	//自定义reduce(),如果reduce()方法存在的话
+	var reduce = Array.prototype.reduce
+		？function(a,f,initial){
+			if(arguments.length>2)
+				return a.reduce(f,initial);//如果传入了一个初始值
+			else
+				return a.reduce(f); //否则没有初始值
+		}
+		:function(a,f,initial){
+			var i = 0;i<a.length;accumulator;
+			//以特定的初始值开始，否则第一个值取自a
+			if(arguments.length>2)
+				accumulator= initial;
+			else{
+				if(len==0) throw TypeError();
+				while(i<len){
+					if(i in a){
+						accumulator = a[i++];
+						break;
+					}
+					else i++;
+				}
+				if(i==len) throw TypeError();
+			}
+			while(i<len){
+				if(i in a)
+					accumulator = f.call(undefined,accumulator,a[i],i,a);
+				i++;
+			}
+			return accumulator;
+		};
