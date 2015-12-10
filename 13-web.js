@@ -111,7 +111,7 @@
 	var name = decodeURIComponent(window.location.search.substring(1))||"";
 	document.write("Hello"+name);
 	</script>
-
+	
 
 		
 
