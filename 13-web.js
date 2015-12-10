@@ -76,5 +76,51 @@
 	</body>
 	</html>
 
-	//
+	//url中的js
+	//在url后面跟一个javascript:协议限定符
+	<a href="javascript:void window.open('about:blank')">打开一个窗口</a>
+
+	//书签 js表达式计算器
+	<a href='javascript:
+		var e ="",r="";
+		do{
+			e = prompt("Expression:"+e+"\n"+r +"\n",e);
+			try{r = "Result:"+eval(e);}
+			catch(ex){r=ex;}
+		}while(e);
+		void 0; /*防止当前文档被覆盖*/
+	'>
+	javascript evaluator
+	</a>
+
+	//onLoad(),当文档载入完成时调用一个函数
+	function onLoad(f){
+		if(onLoad.loaded)
+			window.setTimeout(f,o);
+		else if(window.addEventListener)
+			window.addEventListener("load",f,false);
+		else if(window.attachEvent)
+			window.attachEvent("onload",f);
+	}
+	onLoad.loaded = false; //给onload设置一个标志，用来演示文档是否载入完成
+	onLoad(function(){onLoad.loaded= true;}); //注册一个函数，当文档载入完成时设置这个标志
+
+	//跨站脚本
+	//如果页面动态的产生文档内容，并且这些内容是基于用户提交的数据的，而并没有通过移除任何嵌入的HTML标签消毒的话，页面很容易遭受攻击
+	<script>
+	var name = decodeURIComponent(window.location.search.substring(1))||"";
+	document.write("Hello"+name);
+	</script>
+
+
+		
+
+
+
+
+
+
+
+
+
 
