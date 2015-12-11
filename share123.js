@@ -88,7 +88,7 @@
         var hour = time.getHours();
         var minute = time.getMinutes();
         var second = time.getSeconds();
-        var temp = "" + ((hour > 12) ? hour - 12; hour);
+        var temp = "" + ((hour > 12) ? hour - 12: hour);
         if (hour == 0) {
             temp = 12;
         }
