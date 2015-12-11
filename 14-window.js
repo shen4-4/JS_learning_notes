@@ -60,3 +60,49 @@
 		!/compatible/.test(s)&&/(mozilla)(?:.*rv:([\w.]+)?/.exec(s)||[];
 		return {name:match[1]||"",version:match[2]||"o"};
 	}());
+
+	//对话框
+	//alert()像用户显示一条消息并等待用户关闭对话框
+	//confirm()也显示一条这样的消息，要求用户单击确定或者取消按钮
+	//prompt()等待用户输入字符串，并返回那个字符串
+	do{
+		var name= prompt("what is your name")?
+		var correct = confirm("Your entered'"+name+"'.\n"+"click ok to proceed or cancel to re-enter";
+	}while(!correct)
+		alert('hello'+name);
+
+	//showModalDialog()
+	/*var p = showModalDialog("multiprompt.html",["Enter 3D point coordinates","x","y","z"],
+		"dialogwidth:400;dialogheight:300;resizable:yes");*/
+	<form>
+	<fieldset id="fields"></fieldset>
+	<div style="text-align:center">
+	<button onclick="okay()">okay</button>
+	<button onclick="cancel()">cancel</button>
+	</div>
+	<script>
+		var args = dialogArguments;
+		var text = "<legend>"+args[0]+"</legend>";
+		for(var i= 1;i<args.lenth;i++)
+			text+="<label>"+args[i]+":<input id='f"+i+"'></label><br>";
+		document.getElementById("fields").innerHTML = text;
+		function cancel(){window.close();}
+		function okay(){
+			window.returnValue=[];
+			for(var i =1;i<args.length;i++)
+				window.returnValue[i-1] = document.getElementById("f"+i).value;
+			window.close();
+		}
+	</script>
+	<form>
+
+	//多窗口和窗体
+	//打开和关闭窗口
+	var w = window.open("XXX.html","smallwin","width=400,height=350,status= yes,resizable=yes");
+
+	var w = window.open();
+	w.alert("About to visit http://example.com");
+	w.location = "http:example.com";
+
+	w.close();
+	window.close();
