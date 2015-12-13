@@ -282,9 +282,9 @@
 	f.call(o);
 	f.apply(o);
     
-    o.m = f; //o不预先存在名为m的属性
-    o.m();
-    delete o.m();
+	o.m = f; //o不预先存在名为m的属性
+        o.m();
+        delete o.m();
 	//以对象o的方法来调用函数f(),并传入两个参数
 	f.call(o,1,2);
 	f.apply(o,[1,2]);
