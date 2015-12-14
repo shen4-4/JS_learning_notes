@@ -77,9 +77,140 @@
 		return false;
 	};
 
-	window.applicationCache.onnoupdate function(){
+	window.applicationCache.onnoupdate = function(){
 		status("This version is up-to-date");
 		return false;
 	};
 
-	
+	window.applicationCache.ondownloading = function(){
+		status("Downloading new version");
+		window.progresscount = 0;
+		return false;
+	};
+
+	window.applicationCache.onprogress = function(e){
+		var progress = ""
+		if(e && e.lengthComputable)
+			progress=""+Math.round(100*e.loaded/e.total)+"%"
+		else
+			progress = "(" +progresscount +")"
+		status("Downloading new version"+progress);
+		return false;		
+	};
+	window.applicationCache.oncached = function(){
+		status("This application is now cached locally");
+		return false;
+	};
+	window.applicationCache.onupdateready= function(){
+		status("A new version has been downloaded.reload to run it");
+		return false;
+	};
+	window.applicationCache.onerror = function(){
+		status("Couldn't load mainfest or cache application");
+		return false;
+	};
+	window.applicationCache.onobsolete = function(){
+		status("This application is no longer cached"+"Reload to get the latest version from verison the newwork");
+		return false;
+	};
+
+	//离线web应用
+	var editor statusline,savebutton,idletimer;
+	window.onload = function(){
+		if(localStorage.note == null) localStorage.note="";
+		if(localStorage.lastModified == null) localStorage.lastModified = 0;
+		if(localStorage.lastSaved == null) localStorage.lastSaved = 0；
+		//查找编辑器UI元素，并初始化全局变量
+		editor = document.getElementById("editor");
+		statusline = document.getElementById("statusline");
+		savebutton = document.getElementById("savebutton");
+		//初始化编辑器，同步前禁止编辑
+		editor.value = localStorage.note;
+		editor.disabled = true;
+		editor.addEventListener("input",
+								function(e){
+									localStorage.note = editor.note;
+									localStorage.lastModified = Date.now();
+									if(idletimer) clearTimeout(idletimer);
+									idletimer = setTimeout(save,5000);
+									savebutton.disabled = false;
+								},
+							   false);
+		sync();
+	};
+
+	//离开页面前保存数据到服务器
+	window.onbeforeunload = function(){
+		if(localStorage.lastModified>localStorage.lastSaved)
+			save();
+	};
+	window.onoffline = function(){
+		status(Offline);
+	};
+	window.ononline = function(){
+		sync(); //同步
+	};
+	window.applicationCache.onupdateready = function(){
+		status("A new version blablabla");
+	};
+
+	function status(msg){
+		statusline.innerHTML = msg;
+	}
+	//停止编辑后，自动保存上传到服务器
+	function save(){
+		if(idletimer) clearTimeout(idletimer);
+		idletimer = null;
+		if(navigator.onLine){
+			var xhr = new XMLHttpRequest();
+			xhr.open("PUT","/note");
+			xhr.send(editor,value);
+			xhr.onload = function(){
+				localStorage.lastSaved = Date.now();
+				savebutton.disabled = true;
+			};
+		}
+	}
+
+	//检查服务端是否有新版本的笔记
+	function sync(){
+		if(navigator.onLine){
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET","/note");
+			xhr.send();
+			xhr.onload = function(){
+				var remoteModTime = 0;
+				if(xhr.status ===200){
+					var remoteModTime = xhr.getResponseHeadler("Last_Modified");
+					remoteModTime = new Date(remoteModTime).getTime();
+				}
+				if(remoteModTime>localStorage.lastModified){
+					status("never note found on server");
+					var useit = confirm("There is a newerblablaba");
+					var now = Date.now();
+					if(useit){
+						editor.value= localStorage.note = xhr.responseText;
+						localStorage.lastSaved = now;
+						status("Newest version downloaded");
+					}
+					else{
+						status("Ignoreing newer version of  the note");
+						localStorage.lastModified = now;
+					}
+				}else{
+					status("You are editing the current version of the note");
+				if(localStorage.lastModified>localStorage.lastSaved){
+					save();
+				}
+				editor.disabled= false;
+				editor.focus();
+				}
+			}
+			else{
+				//离线状态，不能同步
+				status("can't sync while Offline");
+				editor.disabled= false;
+				editor.focus();
+			}
+		}
+	}
