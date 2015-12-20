@@ -50,6 +50,112 @@
 		}
 	}
 
+	//事件取消
+	function cancelHandler(event){
+		var event = event||window.event;
+		if(event.preventDefault) event.preventDefault(); //标准
+		if(event.returnValue) event.returnValue = false; //IE
+		return false;
+	}
+
+	//文档加载事件
+	//load事件直到文档和所有图片加载完毕以后才发生
+	//文档准备就绪时调用函数
+	var whenReady = (function(){
+		var funcs = [];
+		var ready= false;
+		function handler(e){
+			if(ready) return;
+			if(e.type ==="readystatechange" && document.readyState!=='complete')
+				return;
+			for(var i=0;i<funcs.length;i++)
+				funcs[i].call(document);
+			ready = true;
+			funcs = null;
+		}
+		if(document.addEventListener){
+			document.addEventListener('DOMContentLoaded',handler,false);
+			document.addEventListener('readystatechange',handler,false);
+			window.addEventListener('load',handler,false);
+		}else if(document.attachEvent){
+			document.attachEvent('onreadystatechange',handler);
+			window.attachEvent('load',handler);
+		}
+		return function whenReady(f){
+			if(ready) f.call(document);
+			else funcs.push(f); //加入队列进行等待
+		}
+	});
+
+	//鼠标事件
+	//拖动文档元素
+	function drag(elementToDrag,event){
+		var scroll = getScrollOffsets();
+		var startX = event.clientX+scrollX;
+		var startY = event.clientY+scrollY;
+		var origX = elementToDrag.offsetLeft;
+		var origY = elementToDrag.offsetTop;
+		var deltaX = startX-origX;
+		var deltaY = startY-origY;
+		if(document.addEventListener){
+			document.addEventListener('mouseover',moveHandler,true);
+			document.addEventListener('mouseup',uphandler,true);
+		}
+		if(event.stopPropgation) event.stopPropgation();
+		if(enent.preventDefault) event.preventDefault();
+	}
+
+	function moveHandler(e){
+		if(!e)e= e.window.event;
+		var scroll = getScrollOffsets();
+		elementToDrag.style.left= (e.clientX+scrollX-deltaX)+'px';
+		elementToDrag.style.top = (e.clientY+scrollY-deltaY)+'px';
+		if(e.stopPropgation) e.stopPropgation();
+		else e.cancelBubble = true;
+	}
+
+	function upHandler(e){
+		if(!e) e= e.window.event;
+		if(document.removeEventListener){
+			document.removeEventListener('mouseup',uphandler,true);
+			document.removeEventListener('mousemove',moveHandler,true);
+		}
+		if(e.stopPropgation)e.stopPropgation();
+		else e.cancelBubble = true;
+	}
+
+
+	//拖放事件
+	//一个自定义拖放源
+	<script src="whenReady.js"></script>
+	<script>
+	whenReady(function(){
+		var clock = document.getElementsById('clock');
+		var icon = new Image();
+		icon.src = "clock-icon.png";
+
+		function displayTime(){
+			var now = new Date();
+			var hrs = now.getHours(),mins = now.getMinutes();
+			if(minx<10) mins="0"+mins;
+			clock.innerHTML = hrs +":"+mins;
+			setTimeout(displayTime,60000);
+		}
+		displayTime();
+
+		clock.draggable = true;
+		clock.ondragstart = function(event){
+			var event = event || window.event;
+			var dt = event.dataTransfer;
+			dt.setData('Text',Date()+"\n")
+			if(dt.setDragImage) dt.setDragImage(icon,0,0);
+		};
+	});
+	</script>
+	<span id="clock"></span>
+	<textarea cols=60,rows=20></textarea>
+
+	
 
 
 
