@@ -155,7 +155,51 @@
 	<span id="clock"></span>
 	<textarea cols=60,rows=20></textarea>
 
+	//文本事件，过滤用户输入
+	whenReady(function(){
+		var inputelts = document.getElementsByTagName('input');
+		for(var i =0;i<inputelts.length;i++){
+			var elt = inputelts[i];
+			if(elt.type!='text'||!elt.getAttribute("data-allowed-chars"))
+				continue;
+			if(elt.addEventListener){
+				elt.addEventListener("keypress",filter,false);
+				elt.addEventListener("textInput",filter,false);
+				elt.addEventListener("textinput",filter,false);
+			}else{
+				elt.addachEvent("onkeypress",filter);
+			}
+		}
+		function filter(event){
+			var e = event||window.event;
+			var target = e.target || e.srcElement;
+			var text = null;
+		}
+		if(e.type==="textinput"||e.type==="textInput") text = e.data;
+		else{
+			var code = e.charCode ||e.keyCode;
+			if(code<32||e.charCode==0||e.ctrlKey||e.altKey)
+				return;
+			var text = String.formCharCode(code);
+		}
+		var allowed = target.getAttribute("data-allowed-chars");
+		var messageid = target.getAttribute("data-messageid");
+		if(messageid)
+			var messageElement = document.getElementsById(messageid);
+		for(var i =0;i<text.length;i++){
+			var c = text.charAt(i);
+			if(allowed.indexOf(c)==-1){
+				if(messageElement) messageElement.style.visibility="visible";
+				if(e.preventDefault) e.preventDefault();
+				if(e.returnValue)e.returnValue= false;
+				return false;
+			}
+		}
+		if(messageElement)messageElement.style.visibility= "hidden";
+	});
+
 	
+
 
 
 
