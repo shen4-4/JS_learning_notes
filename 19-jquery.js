@@ -59,5 +59,23 @@
 	$("body>p:first").wrap("<a name='lead'><div class='first'></div></a>");
 	$("body>p:not(:first)")	.wrapAll(<div class='rest'></div>);
 
-	
+	//使用jquery处理事件
+	//单击任意<p>使其背景变灰
+	$("p").click(function() {
+		/* Act on the event */
+		$(this).css("background-color",'gray');
+	});
+
+	//简单的调用单一的，更复杂的方法bind()来为命名的事件类型绑定处理程序
+	$('p').bind('click',f);
+	//从所有元素中移除所有jquery事件处理程序
+	$('*').unbind();
+
+	//.trigger()事件
+
+
+
+
+
+
 
