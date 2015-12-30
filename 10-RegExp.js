@@ -101,7 +101,7 @@
 	"1 plus 2 equals 3".match(/\d+/g) //返回["1","2","3"]
 
 	//解析一个URL
-	var url = /(w+):\/\/([\w.]+)\/(\S*)/；
+	var url = /(w+):\/\/([\w.]+)\/(\S*)/;
 	var text = "Boys go to the http://www.v2ex.com/?job named Coding Peasant." 
 	var result = text.match(url);
 	if(result!==null){
