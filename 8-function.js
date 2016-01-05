@@ -13,6 +13,20 @@
 			return x* fact(x-1);
 		}
 	};
+
+  	//特殊情况1
+	foo; // 'undefined'
+	foo(); // TypeError
+	var foo = function() {};
+
+	//特殊情况2
+	var foo = function bar() {
+	    bar(); // ok   函数名在函数内总是可见的
+	}
+	bar(); //ReferenceError  JavaScript 中没有显式的命名空间定义，这就意味着所有对象都定义在一个全局共享的命名空间下面
+    //每次引用一个变量，JavaScript 会向上遍历整个作用域直到找到这个变量为止。 如果到达全局作用域但是这个变量仍未找到，则会抛出 ReferenceError 异常。
+
+
 	//作为参数传给其他函数
 	data.sort(function(a,b){
 		return a-b;
@@ -200,6 +214,7 @@
 
 	//闭包
 	//函数对象可以通过作用域链相互关联起来，函数体内部的变量都可以保存在函数作用域内，这种特性称为‘闭包’
+	//闭包通常用来创建内部变量，使得这些变量不能被外部随意修改，同时又可以通过指定的函数接口来操作。
 	//理解闭包先了解嵌套函数的作用域规则
 	var scope = "global scope";
 	function checkscope(){
@@ -240,6 +255,30 @@
 	o.setName("Frank");
 	console.log(o.getName());
 	o.setName(0);
+
+	//循环中的闭包
+	for(var i = 0; i < 10; i++) {
+	    setTimeout(function() {
+	        console.log(i);  
+	    }, 1000);
+	}
+
+	for(var i = 0; i < 10; i++) {
+	    (function(e) {
+	        setTimeout(function() {
+	            console.log(e);  
+	        }, 1000);
+	    })(i);
+	}
+
+	for(var i = 0; i < 10; i++) {
+	    setTimeout((function(e) {
+	        return function() {
+	            console.log(e);
+	        }
+	    })(i), 1000)
+	}
+
 
 	//在同一个作用域链中定义两个闭包，这两个闭包共享同样的私有变量或变量
 	//注意那些不希望共享的变量往往不经意间共享给了其他的闭包
